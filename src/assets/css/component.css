@@ -1,0 +1,8 @@
+@layer components {
+    .btn-primary {
+        @apply h-12 w-auto px-12 flex items-center justify-center font-semibold bg-primary text-white  rounded-lg  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+    }
+    .btn-outline {
+        @apply h-12 w-auto px-12 flex items-center justify-center font-semibold border border-primary text-primary  rounded-lg  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+    }
+}
