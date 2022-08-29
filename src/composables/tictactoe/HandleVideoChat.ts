@@ -30,7 +30,7 @@ export const useVideoChat = () => {
     }
 
     const requestVideoChat = async () => {
-        await navigator.mediaDevices.getUserMedia()
+        await navigator.mediaDevices.getUserMedia(constraints)
         // .then(stream => {
         //     console.log('Got MediaStream:', stream);
         // })
