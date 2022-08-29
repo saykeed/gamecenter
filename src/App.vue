@@ -1,21 +1,20 @@
-<script setup lang="ts">
-
-</script>
 
 <template>
-    <h1 class="btn-primary">i am home</h1>
+    <RouterView/>
+    <Loader/>
+    <Alert/>
+    <IngameWidget/>
+    <PromptModal/>
 </template>
 
+<script setup lang="ts">
+    import IngameWidget from './components/IngameComps/IngameWidget.vue'
+    import Loader from './components/Loader.vue'
+    import Alert from './components/Notification/Alert.vue'
+import PromptModal from './components/Notification/PromptModal.vue'
+    
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>

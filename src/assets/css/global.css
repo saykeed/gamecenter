@@ -2,18 +2,36 @@
 
 * {
     font-family: 'Poppins', sans-serif;
-    box-sizing: border-box;
-    background: #15083E;
-    scroll-behavior: smooth;
-    scroll-padding: 4rem;
-    overflow-x: hidden;
+    
   }
 
-/* html {
-    background: #15083E;
+ 
+
+html {
+    background: var(--backGround);
+    box-sizing: border-box;
     scroll-behavior: smooth;
     scroll-padding: 4rem;
-    overflow-x: hidden;
-} */
+    /* overflow-x: hidden; */
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--divider);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blue);
+}
 
 

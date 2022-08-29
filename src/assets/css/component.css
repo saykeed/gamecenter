@@ -1,8 +1,33 @@
 @layer components {
-    .btn-primary {
-        @apply h-12 w-auto px-12 flex items-center justify-center font-semibold bg-primary text-white  rounded-lg  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+    .btn-white {
+        @apply w-auto px-5 py-2 flex items-center justify-center font-medium bg-white text-primary  rounded-full hover:bg-primary hover:text-white  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
     }
-    .btn-outline {
-        @apply h-12 w-auto px-12 flex items-center justify-center font-semibold border border-primary text-primary  rounded-lg  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+
+    .btn-primary {
+        @apply w-auto px-5 py-2 flex items-center justify-center font-medium bg-primary text-white  rounded-full hover:bg-white hover:text-primary  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+    }
+
+    .a-btn-white{
+        @apply w-fit px-5 py-2 flex items-center justify-center font-medium bg-white text-primary  rounded-full hover:bg-primary hover:text-white  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+    }
+
+    .a-btn-primary {
+        @apply px-5 py-2 flex items-center justify-center font-medium bg-primary text-white  rounded-full hover:bg-white hover:text-primary  outline-none transition-all duration-200 ease-in disabled:cursor-not-allowed;
+    }
+
+    .sent-message-wrapper {
+        @apply flex justify-end w-full h-fit py-1;
+    }
+    
+    .sent-message {
+        @apply  bg-green-500 w-fit max-w-[200px] text-white py-0.5 px-3 rounded-lg;
+    }
+
+    .received-message-wrapper{
+        @apply flex justify-start w-full h-fit py-1;
+    }
+
+    .received-message {
+        @apply float-left bg-teal-900 w-fit max-w-[200px] text-white py-0.5 px-3 rounded-lg;
     }
 }
