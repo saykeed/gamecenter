@@ -35,14 +35,14 @@
     const inputMsg = ref('')
 
     const sendMessage = () => {
-        let box = document.querySelector('.msgBox')
+        let box:any = document.querySelector('.msgBox')
         box.innerHTML += `<div class="sent-message-wrapper"><div class="sent-message">${inputMsg.value}</div></div>`
         socket.value?.emit('sentMessage', inputMsg.value)
         inputMsg.value = ''
     }
 
     const receiveMessage = (msg:string) => {
-        let box = document.querySelector('.msgBox')
+        let box:any = document.querySelector('.msgBox')
         box.innerHTML += `<div class="received-message-wrapper"><div class="received-message">${msg}</div></div>`
     }
 

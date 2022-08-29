@@ -48,14 +48,14 @@ export const useVideoChat = () => {
 
     
 
-    const handleMessages = () => {
-        socket.value?.on('receivedMessage', (msg) => {
-            chatStatus.value = true
-            setTimeout(() => {
-                inboxMsg.value = msg 
-            }, 200);
-        })
-    }
+    // const handleMessages = () => {
+    //     socket.value?.on('receivedMessage', (msg) => {
+    //         chatStatus.value = true
+    //         setTimeout(() => {
+    //             inboxMsg.value = msg 
+    //         }, 200);
+    //     })
+    // }
 
     return { requestVideoChat }
 }
