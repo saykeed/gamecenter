@@ -3,11 +3,10 @@
     <div class="promptModal fixed top-0 left-0 w-full h-full flex items-center justify-center z-20" v-if="modalStatus">
         <div class="modalBackground absolute top-0 left-0 h-full w-full bg-[rgba(0,0,0,0.800)] z-30"></div>
         <div class="actualModal h-[200px] w-[80%] max-w-[400px] bg-white rounded z-40 overflow-auto">
-            {{modalOptions}}
             <button v-for="item in modalOptions" :key="item.deviceId"
                 class="w-full p-1 my-1 text-primary hover:bg-primary hover:text-white"
             >
-                {{item.kind}} = {{item.label}}
+                {{item.label}}
             </button>
         </div>
     </div>
