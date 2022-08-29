@@ -31,18 +31,20 @@ export const useVideoChat = () => {
 
     const requestVideoChat = () => {
 
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            console.log('Got MediaStream:', stream);
+        })
+        .catch(error => {
+            console.error('Error accessing media devices.', error);
+            openAlert('Could not access media devices')
+        });
+
         const cameras = getConnectedDevices('videoinput').then(data => {
             console.log(data)
             openModal(data)
         })
-        // navigator.mediaDevices.getUserMedia(constraints)
-        // .then(stream => {
-        //     console.log('Got MediaStream:', stream);
-        // })
-        // .catch(error => {
-        //     console.error('Error accessing media devices.', error);
-        //     openAlert('Could not access media devices')
-        // });
+        
     }
 
     
