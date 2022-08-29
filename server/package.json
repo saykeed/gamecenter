@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "game center web socket server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.ts"
+  },
+  "author": "Abubakri Sherif",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19",
+    "socket.io": "^4.5.1"
+  }
+}
