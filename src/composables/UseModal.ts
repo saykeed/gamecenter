@@ -2,7 +2,7 @@ import {ref} from 'vue'
 import Cam from '../Interface/cam'
 
 const modalStatus = ref(false)
-const modalOptions = ref<any[]>()
+const modalOptions = ref<any>('hello')
 
 export const useModal = () => {
 

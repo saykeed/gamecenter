@@ -20,7 +20,6 @@ export const useVideoChat = () => {
     }
 
     async function getConnectedDevices(type:string) {
-        console.log(navigator)
         if(navigator.mediaDevices) {
             const devices = await navigator.mediaDevices.enumerateDevices();
             return devices.filter(device => device.kind === type)
