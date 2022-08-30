@@ -3,7 +3,7 @@
     <div class="promptModal fixed top-0 left-0 w-full h-full flex items-center justify-center z-20" v-if="modalStatus">
         <div class="modalBackground absolute top-0 left-0 h-full w-full bg-[rgba(0,0,0,0.800)] z-30"></div>
         <div class="actualModal h-[200px] w-[80%] max-w-[400px] bg-white rounded z-40 overflow-auto">
-            <button v-for="item in modalOptions" :key="item.deviceId"
+            <button v-for="item in modalOptions" :key="item.deviceId" @click="selected(item)"
                 class="w-full p-1 my-1 text-primary hover:bg-primary hover:text-white"
             >
                 {{item.label}}
@@ -14,8 +14,15 @@
 
 <script setup lang="ts">
     import { useModal } from '../../composables/UseModal'
+    import {useVideoChat } from '../../composables/tictactoe/HandleVideoChat'
 
-    const {modalStatus, modalOptions } = useModal()
+    const {modalStatus, modalOptions, closeModal } = useModal()
+    const { selectDevice } = useVideoChat()
+
+    const selected = (item:MediaDeviceInfo) => {
+        selectDevice(item)
+        closeModal()
+    }
     
 </script>
 

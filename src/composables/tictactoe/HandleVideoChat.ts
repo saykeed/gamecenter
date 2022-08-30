@@ -10,7 +10,7 @@ const { openAlert } = useAlert()
 const { openModal, modalOptions } =  useModal()
 
 const chatStatus = ref(false)
-const selectedCamera = ref<Cam>()
+const stream = ref<MediaStream>()
 
 
 export const useVideoChat = () => {
@@ -29,8 +29,27 @@ export const useVideoChat = () => {
         
     }
 
+    async function openCamera(cameraId:string) {
+        const constraints = {
+            'audio': {'echoCancellation': true},
+            'video': {
+                'deviceId': cameraId
+                }
+            }
+    
+        return await navigator.mediaDevices.getUserMedia(constraints);
+    }
+
     const requestVideoChat = async () => {
-        await navigator.mediaDevices.getUserMedia(constraints)
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(() => {
+            getConnectedDevices('videoinput').then(data => {
+                openModal(data)
+            })
+        })
+        .catch(() => {
+            openAlert('Could not access media devices')
+        })
         // .then(stream => {
         //     console.log('Got MediaStream:', stream);
         // })
@@ -39,11 +58,15 @@ export const useVideoChat = () => {
         //     openAlert('Could not access media devices')
         // });
 
-        const cameras = getConnectedDevices('videoinput').then(data => {
-            console.log(data)
-            openModal(data)
-        })
         
+        
+    }
+
+    const selectDevice = (selectedCam:MediaDeviceInfo) => {
+        openCamera(selectedCam.deviceId).then(dataStream => {
+            console.log(dataStream)
+            stream.value = dataStream
+        })
     }
 
     
@@ -57,5 +80,5 @@ export const useVideoChat = () => {
     //     })
     // }
 
-    return { requestVideoChat }
+    return { requestVideoChat, selectDevice, stream}
 }
