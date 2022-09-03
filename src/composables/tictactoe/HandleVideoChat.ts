@@ -97,8 +97,8 @@ export const useVideoChat = () => {
         })
     }
 
-    const addStreamToRTC = (stream:MediaStream, peerConn:RTCPeerConnection) => {
-        stream.getTracks().forEach(track => {
+    const addStreamToRTC = (stream:MediaStream | undefined, peerConn:RTCPeerConnection) => {
+        stream?.getTracks().forEach(track => {
             peerConn.addTrack(track, stream);
         });
     }
