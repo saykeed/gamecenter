@@ -1,7 +1,7 @@
 
 <template>
     <div class="videoCall w-screen h-screen fixed top-0 left-0 z-20 bg-[black]"  >
-        <video id="remoteVid"  autoplay muted
+        <video id="remoteVid"  autoplay
             class="remoteVid absolute w-full h-full top-0 left-0 border border-red-600">
         </video>
         <video id="localVid" autoplay muted
