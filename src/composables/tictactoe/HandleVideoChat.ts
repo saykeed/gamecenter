@@ -101,12 +101,14 @@ export const useVideoChat = () => {
         stream?.getTracks().forEach(track => {
             peerConn.addTrack(track, stream);
         });
+        console.log('stream sent out')
     }
     const localIceListener = (peerConn:RTCPeerConnection, socketEventName:string) => {
         peerConn.addEventListener('icecandidate', event => {
             if (event.candidate) {
                 socket.value?.emit(socketEventName, event.candidate)
             }
+            console.log('ice sent out')
         });
     }
     const confirmPeerConnection = (peerConn:RTCPeerConnection) => {
@@ -119,6 +121,7 @@ export const useVideoChat = () => {
 
     const remoteTrackListener = (peerConn:RTCPeerConnection) => {
         peerConn.addEventListener('track', async (event) => {
+            console.log('remote stream received')
             const [Stream] = event.streams;
             remoteStream.value = Stream
             console.log(remoteStream.value)
@@ -136,6 +139,7 @@ export const useVideoChat = () => {
         })
         socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
             if(ice) {
+                console.log('received ice')
                 try {
                     await peerConnection.addIceCandidate(ice);
                 } catch (e) {
@@ -173,13 +177,15 @@ export const useVideoChat = () => {
     const receiveCall = async () => {
         videoCallStatus.value = true
         const peerConnection = new RTCPeerConnection(configuration);
-        addStreamToRTC(stream.value, peerConnection)   
+        addStreamToRTC(stream.value, peerConnection) 
+        remoteTrackListener(peerConnection)  
         peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         socket.value?.emit('outgoingAnswer', answer)
         socket.value?.on('incomingSenderIceCandidate', async (ice) => {
             if(ice) {
+                console.log('received ice')
                 try {
                     await peerConnection.addIceCandidate(ice);
                 } catch (e) {
@@ -189,7 +195,6 @@ export const useVideoChat = () => {
         })
         localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
         confirmPeerConnection(peerConnection)
-        remoteTrackListener(peerConnection)
     }
 
     return { requestVideoChat, selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus}
