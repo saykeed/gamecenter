@@ -20,7 +20,7 @@
         let local:any = document.querySelector('.localVid')
         local.srcObject = stream.value;
         let remote:any = document.querySelector('.remoteVid')
-        remote.srcObject = stream.value;
+        remote.srcObject = remoteStream.value;
     })
     
     
