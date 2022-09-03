@@ -3,6 +3,7 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 
+const port = process.env.PORT || 1234
 const app = express();
 const httpServer = createServer(app);
 
@@ -48,11 +49,30 @@ io.on("connection", (socket) => {
         socket.to(roomID).emit("receivedMessage", msg);
     })
 
+    socket.on('outgoingOffer', (msg) => {
+        socket.to(roomID).emit("incomingOffer", msg);
+    })
+
+    socket.on('outgoingAnswer', (msg) => {
+        socket.to(roomID).emit("incomingAnswer", msg);
+    })
+
+    socket.on('rejectCall', () => {
+        socket.to(roomID).emit("callRejected");
+    })
+
+    socket.on('outgoingSenderIceCandidate', (msg) => {
+        socket.to(roomID).emit("incomingSenderIceCandidate", msg);
+    })
+
+    socket.on('outgoingReceiverIceCandidate', (msg) => {
+        socket.to(roomID).emit("incomingReceiverIceCandidate", msg);
+    })
     
 });
 
 
 
-httpServer.listen(1234, () => {
-    console.log('listening on port 1234')
+httpServer.listen(port, () => {
+    console.log(`listening on port ${port}`)
 });

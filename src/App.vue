@@ -3,10 +3,10 @@
     <RouterView/>
     <Loader/>
     <Alert/>
-    <IngameWidget/>
+    <!-- <IngameWidget/> -->
     <PromptModal/>
-    <div class="videoWrapper"></div>
-    <video id="videoEl" class="myVideo border-2 border-red-600 w-[300px] h-[300px] mx-auto"  src="" autoplay></video>
+    <!-- <div class="videoWrapper"></div>
+    <video id="videoEl" class="myVideo border-2 border-red-600 w-[300px] h-[300px] mx-auto"  src="" autoplay></video> -->
 
     <!-- http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 -->
 </template>
@@ -22,14 +22,14 @@ import IngameWidget from './components/IngameComps/IngameWidget.vue'
 
     const { stream } = useVideoChat()
 
-    watch(stream, (newMsg) => {
-            // let el:any = document.querySelector('.videoWrapper')
-            // el+= `<video></video>`
+    // watch(stream, (newMsg) => {
+    //         // let el:any = document.querySelector('.videoWrapper')
+    //         // el+= `<video></video>`
 
-            let el:any = document.querySelector('#videoEl')
-            el.srcObject = stream.value;
-            // console.log(el, stream)
-    })
+    //         let el:any = document.querySelector('#videoEl')
+    //         el.srcObject = stream.value;
+    //         // console.log(el, stream)
+    // })
     
     onMounted(() => {
         // setTimeout(() => {

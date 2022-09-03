@@ -20,11 +20,12 @@
                 <button v-if="rematch" class="btn-primary">Play Again {{rematch}}</button>
             </div>
         </div>
-        <IngameWidget/>
+        <IngameWidget v-if="gameStatus"/>
     </ingame-pages>
     <keep-alive>
         <IngameChatBox/>
     </keep-alive>
+    <VideoCall v-if="videoCallStatus"/>
 </template>
 
 <script setup lang="ts">
@@ -34,9 +35,12 @@
     import { useTicGameHandler } from '../../../composables/tictactoe/HandleTicGame'
     import IngameWidget from '../../../components/IngameComps/IngameWidget.vue'
     import IngameChatBox from '../../../components/IngameComps/IngameChatBox.vue';
+    import VideoCall from '../../../components/VideoCall.vue';
+    import { useVideoChat } from '../../../composables/tictactoe/HandleVideoChat';
 
     const route = useRoute()
     const { makeConnection } = useHandleConnection()
+    const { videoCallStatus } =  useVideoChat()
     const { board, tileClicked, ifDisabled, gameStatus, myTurn, rematch, rematchDesc, mySymbol } =  useTicGameHandler()
 
 

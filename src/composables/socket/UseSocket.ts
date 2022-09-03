@@ -3,12 +3,13 @@ import { ref } from 'vue'
 
 
 const socket = ref<Socket>()
-
+const url = 'https://saykeed-game-center.herokuapp.com/'
+// const url = "http://localhost:1234/"
 
 export const useSocket = () => {
     const connectSocket = () => {
         return new Promise<any>((rs, rj) => {
-            socket.value = io("http://localhost:1234/");
+            socket.value = io(url);
             
             socket.value.on('connect', () => {
                 rs(socket.value)

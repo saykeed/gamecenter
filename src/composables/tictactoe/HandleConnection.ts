@@ -6,13 +6,14 @@ import { useLoader } from "../UseLoader";
 import { useAlert } from "../UseAlert";
 import router from "../../router";
 import { useChat } from "./HandleChat";
+import { useVideoChat } from "./HandleVideoChat";
 
 const { openLoader, closeLoader } = useLoader()
 const { openAlert } = useAlert()
 const { socket, connectSocket } = useSocket()
 const { handleMessages } = useChat()
 const { handleGameUpdate, handleGameStart, setupFirstSocket, handleGameEnd } = useTicGameHandler();
-
+const { handleIncomingWebrtcData } = useVideoChat()
 
 export const useHandleConnection = () => {
    
@@ -36,6 +37,7 @@ export const useHandleConnection = () => {
                 setupFirstSocket()
                 handleGameEnd()
                 handleMessages()
+                handleIncomingWebrtcData()
             })
             .catch((err) => {
                 openAlert(err)
