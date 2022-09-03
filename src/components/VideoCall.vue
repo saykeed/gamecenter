@@ -20,11 +20,12 @@
         let local:any = document.querySelector('.localVid')
         local.srcObject = stream.value;
         
-        
-        watch(remoteStream, (new) => {
+        watch(remoteStream, (newX) => {
+            // console.log(`x is ${newX}`)
             let remote:any = document.querySelector('.remoteVid')
-            remote.srcObject = new
+            remote.srcObject = remoteStream.value;
         })
+        
         // setTimeout(() => {
         //     let semi:any = document.querySelector('.semiVid')
         //     semi.srcObject = remoteStream.value;
