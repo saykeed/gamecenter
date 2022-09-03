@@ -7,14 +7,11 @@
         <video id="localVid" autoplay muted
             class="localVid absolute w-[30%] max-w-[150px] h-[200px] top-5 left-5 border border-slate-300 rounded-2xl">
         </video>
-        <video id="semiVid" autoplay muted
-            class="semiVid absolute w-[30%] max-w-[150px] h-[200px] top-5 right-5 border border-slate-300 rounded-2xl">
-        </video>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { onMounted } from 'vue';
+    import { onMounted, watch } from 'vue';
     import {useVideoChat } from '../composables/tictactoe/HandleVideoChat'
 
     const { stream, remoteStream } = useVideoChat()
@@ -22,13 +19,16 @@
     onMounted(() => {
         let local:any = document.querySelector('.localVid')
         local.srcObject = stream.value;
-        let remote:any = document.querySelector('.remoteVid')
-        remote.srcObject = remoteStream.value;
-
-        setTimeout(() => {
-            let semi:any = document.querySelector('.semiVid')
-            semi.srcObject = remoteStream.value;
-        }, 10000);
+        
+        
+        watch(remoteStream, (new) => {
+            let remote:any = document.querySelector('.remoteVid')
+            remote.srcObject = new
+        })
+        // setTimeout(() => {
+        //     let semi:any = document.querySelector('.semiVid')
+        //     semi.srcObject = remoteStream.value;
+        // }, 10000);
     })
     
     
