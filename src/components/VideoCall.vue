@@ -7,7 +7,9 @@
         <video id="localVid" autoplay muted
             class="localVid absolute w-[30%] max-w-[150px] h-[200px] top-5 left-5 border border-slate-300 rounded-2xl">
         </video>
-        <div class="absolute w-[90%] left-0 top-0 text-white z-50">{{remoteStream}}</div>
+        <video id="semiVid" autoplay muted
+            class="semiVid absolute w-[30%] max-w-[150px] h-[200px] top-5 right-5 border border-slate-300 rounded-2xl">
+        </video>
     </div>
 </template>
 
@@ -22,6 +24,11 @@
         local.srcObject = stream.value;
         let remote:any = document.querySelector('.remoteVid')
         remote.srcObject = remoteStream.value;
+
+        setTimeout(() => {
+            let semi:any = document.querySelector('.semiVid')
+            semi.srcObject = remoteStream.value;
+        }, 10000);
     })
     
     
