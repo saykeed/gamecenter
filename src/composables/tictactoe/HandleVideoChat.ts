@@ -242,22 +242,22 @@ export const useVideoChatOptions = () => {
 
     const controlAudio = (stream:MediaStream | undefined) => {
         audioStatus.value = !audioStatus.value
-        // stream?.getTracks().forEach(track => {
-        //     if (track.kind === 'audio') {
-        //       track.enabled = audioStatus.value
-        //     //   console.log(track)
-        //     }
-        // })
+        stream?.getTracks().forEach(track => {
+            if (track.kind === 'audio') {
+              track.enabled = audioStatus.value
+            //   console.log(track)
+            }
+        })
     }
 
     const controlVideo = (stream:MediaStream | undefined) => {
         videoStatus.value = !videoStatus.value
-        // stream?.getTracks().forEach(track => {
-        //     if (track.kind === 'video') {
-        //       track.enabled = videoStatus.value
-        //     //   console.log(track)
-        //     }
-        // })
+        stream?.getTracks().forEach(track => {
+            if (track.kind === 'video') {
+              track.enabled = videoStatus.value
+            //   console.log(track)
+            }
+        })
     }
 
     const controlVideoChatLayout = () => {
