@@ -231,7 +231,7 @@ export const useVideoChat = () => {
 
 
 const videoChatOptions = ref(false)
-const audioStatus = ref(false)
+const audioStatus = ref(true)
 const videoStatus = ref(true)
 const minimizeVideoChat = ref(false)
 
