@@ -13,7 +13,9 @@ module.exports = {
         white: 'var(--white)',
 				blue: 'var(--blue)',
 				light_grey: 'var(--light_grey)',
-				divider: 'var(--divider)'
+				divider: 'var(--divider)',
+        red: 'var(--red)',
+        ash: 'var(--ash)'
 			}
     },
   },

@@ -30,4 +30,7 @@
     .received-message {
         @apply float-left bg-teal-900 w-fit max-w-[200px] text-white py-0.5 px-3 rounded-lg;
     }
+    .inVidButton{
+        @apply w-12 h-12 flex items-center justify-center text-lg rounded-full text-white border-none outline-none
+    }
 }

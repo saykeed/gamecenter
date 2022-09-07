@@ -1,14 +1,14 @@
 import {ref} from 'vue'
 import { useSocket } from '../socket/UseSocket'
 import { useAlert } from '../UseAlert'
-import Cam from '../../Interface/cam'
 import { useModal } from '../UseModal'
-import { watch } from 'fs'
-
 
 const { socket } = useSocket()
 const { openAlert } = useAlert()
 const { openModal } =  useModal()
+
+
+
 
 const videoCallStatus = ref(false)
 const userType = ref('')
@@ -17,31 +17,51 @@ const stream = ref<MediaStream>()
 const remoteStream = ref<MediaStream>()
 // const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 const configuration = {
+    // iceServers: [
+    //      {
+    //          urls: [
+    //              "stun:openrelay.metered.ca:80",
+    //              'stun:stun1.l.google.com:19302',
+    //              'stun:stun2.l.google.com:19302',
+    //          ],
+    //      },
+    //      {
+    //          urls: "turn:openrelay.metered.ca:80",
+    //          username: "openrelayproject",
+    //          credential: "openrelayproject"
+    //      },
+    //      {
+    //          urls: "turn:openrelay.metered.ca:443",
+    //          username: "openrelayproject",
+    //          credential: "openrelayproject"
+    //      },
+    //      {
+    //          urls: "turn:openrelay.metered.ca:443?transport=tcp",
+    //          username: "openrelayproject",
+    //          credential: "openrelayproject"
+    //      }
+    //  ],
+    //  iceCandidatePoolSize: 10,
     iceServers: [
-         {
-             urls: [
-                 "stun:openrelay.metered.ca:80",
-                 'stun:stun1.l.google.com:19302',
-                 'stun:stun2.l.google.com:19302',
-             ],
-         },
-         {
-             urls: "turn:openrelay.metered.ca:80",
-             username: "openrelayproject",
-             credential: "openrelayproject"
-         },
-         {
-             urls: "turn:openrelay.metered.ca:443",
-             username: "openrelayproject",
-             credential: "openrelayproject"
-         },
-         {
-             urls: "turn:openrelay.metered.ca:443?transport=tcp",
-             username: "openrelayproject",
-             credential: "openrelayproject"
-         }
-     ],
-     iceCandidatePoolSize: 10,
+        {
+          urls: "stun:openrelay.metered.ca:80",
+        },
+        {
+          urls: "turn:openrelay.metered.ca:80",
+          username: "openrelayproject",
+          credential: "openrelayproject",
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443",
+          username: "openrelayproject",
+          credential: "openrelayproject",
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443?transport=tcp",
+          username: "openrelayproject",
+          credential: "openrelayproject",
+        }
+    ]
 }
 
 export const useVideoChat = () => {
@@ -198,4 +218,31 @@ export const useVideoChat = () => {
     }
 
     return { requestVideoChat, selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus}
+}
+
+
+
+const videoChatOptions = ref(false)
+const audioStatus = ref(false)
+const videoStatus = ref(true)
+const minimizeVideoChat = ref(false)
+
+export const useVideoChatOptions = () => {
+    const toggleVideoChatOptions = () => {
+        videoChatOptions.value = !videoChatOptions.value
+    }
+
+    const controlAudio = () => {
+        audioStatus.value = !audioStatus.value
+    }
+
+    const controlVideo = () => {
+        videoStatus.value = !videoStatus.value
+    }
+
+    const controlVideoChatLayout = () => {
+        minimizeVideoChat.value = !minimizeVideoChat.value
+    }
+
+    return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout }
 }
