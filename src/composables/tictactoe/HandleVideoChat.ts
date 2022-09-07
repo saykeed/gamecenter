@@ -17,51 +17,61 @@ const stream = ref<MediaStream>()
 const remoteStream = ref<MediaStream>()
 // const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 const configuration = {
-    // iceServers: [
-    //      {
-    //          urls: [
-    //              "stun:openrelay.metered.ca:80",
-    //              'stun:stun1.l.google.com:19302',
-    //              'stun:stun2.l.google.com:19302',
-    //          ],
-    //      },
-    //      {
-    //          urls: "turn:openrelay.metered.ca:80",
-    //          username: "openrelayproject",
-    //          credential: "openrelayproject"
-    //      },
-    //      {
-    //          urls: "turn:openrelay.metered.ca:443",
-    //          username: "openrelayproject",
-    //          credential: "openrelayproject"
-    //      },
-    //      {
-    //          urls: "turn:openrelay.metered.ca:443?transport=tcp",
-    //          username: "openrelayproject",
-    //          credential: "openrelayproject"
-    //      }
-    //  ],
-    //  iceCandidatePoolSize: 10,
     iceServers: [
         {
-          urls: "stun:openrelay.metered.ca:80",
+          urls: [
+            'stun:stun1.l.google.com:19302',
+            'stun:stun2.l.google.com:19302',
+          ],
         },
         {
           urls: "turn:openrelay.metered.ca:80",
           username: "openrelayproject",
-          credential: "openrelayproject",
+          credential: "openrelayproject"
         },
         {
           urls: "turn:openrelay.metered.ca:443",
           username: "openrelayproject",
-          credential: "openrelayproject",
+          credential: "openrelayproject"
         },
         {
           urls: "turn:openrelay.metered.ca:443?transport=tcp",
           username: "openrelayproject",
-          credential: "openrelayproject",
+          credential: "openrelayproject"
         }
-    ]
+    ],
+    iceCandidatePoolSize: 10,
+    // iceServers: [
+    //     {
+    //       urls: "stun:openrelay.metered.ca:80",
+    //     },
+    //     {
+    //       urls: "turn:openrelay.metered.ca:80",
+    //       username: "openrelayproject",
+    //       credential: "openrelayproject",
+    //     },
+    //     {
+    //       urls: "turn:openrelay.metered.ca:443",
+    //       username: "openrelayproject",
+    //       credential: "openrelayproject",
+    //     },
+    //     {
+    //       urls: "turn:openrelay.metered.ca:443?transport=tcp",
+    //       username: "openrelayproject",
+    //       credential: "openrelayproject",
+    //     }
+    // ]
+}
+const joinConfig = {
+    iceServers: [
+      {
+        urls: [
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+    ],
+    iceCandidatePoolSize: 10,
 }
 
 export const useVideoChat = () => {
@@ -103,8 +113,6 @@ export const useVideoChat = () => {
             openAlert('Could not access media devices')
         }) 
     }
-
-    
 
     const selectDevice = (selectedCam:MediaDeviceInfo) => {
         openCamera(selectedCam.deviceId).then(dataStream => {
@@ -196,7 +204,7 @@ export const useVideoChat = () => {
 
     const receiveCall = async () => {
         videoCallStatus.value = true
-        const peerConnection = new RTCPeerConnection(configuration);
+        const peerConnection = new RTCPeerConnection(joinConfig);
         addStreamToRTC(stream.value, peerConnection) 
         remoteTrackListener(peerConnection)  
         peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
@@ -232,12 +240,24 @@ export const useVideoChatOptions = () => {
         videoChatOptions.value = !videoChatOptions.value
     }
 
-    const controlAudio = () => {
+    const controlAudio = (stream:MediaStream | undefined) => {
         audioStatus.value = !audioStatus.value
+        stream?.getTracks().forEach(track => {
+            if (track.kind === 'audio') {
+              track.enabled = audioStatus.value
+            //   console.log(track)
+            }
+        })
     }
 
-    const controlVideo = () => {
+    const controlVideo = (stream:MediaStream | undefined) => {
         videoStatus.value = !videoStatus.value
+        stream?.getTracks().forEach(track => {
+            if (track.kind === 'video') {
+              track.enabled = videoStatus.value
+            //   console.log(track)
+            }
+        })
     }
 
     const controlVideoChatLayout = () => {

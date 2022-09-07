@@ -15,12 +15,12 @@
         <transition name="options">
             <div class="optionsContainer absolute bottom-10 left-0 w-full h-fit flex items-center justify-center" :class="{'hidden': minimizeVideoChat}" v-if="videoChatOptions">
                 <div class="options w-[80%] max-w-[600px] flex items-center justify-between text-white">
-                    <button class="inVidButton" @click="controlAudio"
+                    <button class="inVidButton" @click="controlAudio(stream)"
                         :class="{'bg-ash' : audioStatus, 'bg-red' : !audioStatus}" 
                     >
                         <i class="material-icons">{{audioStatus ? 'mic' : 'mic_off'}}</i>
                     </button>
-                    <button class="inVidButton" @click="controlVideo"
+                    <button class="inVidButton" @click="controlVideo(stream)"
                         :class="{'bg-ash' : videoStatus, 'bg-red' : !videoStatus}" 
                     >
                         <i class="material-icons">{{videoStatus ? 'videocam' : 'videocam_off'}}</i>
