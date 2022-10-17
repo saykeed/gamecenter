@@ -2,9 +2,11 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const cors = require('cors')
 
 const port = process.env.PORT || 1234
 const app = express();
+app.use(cors())
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
@@ -18,8 +20,6 @@ io.on("connection", (socket) => {
     let clientsInRoom
 
     io.to(socket.id).emit('socketConnectedSuccessfully')
-
-    
     
     socket.on('roomId', async (id) => {
         roomID = id
@@ -40,21 +40,6 @@ io.on("connection", (socket) => {
         }
     })
 
-	// socket.on('rejoinRoom', async (id) => {
-	// 	await socket.join(id)
-	// 	clientsInRoom = io.sockets.adapter.rooms.get(id)
-	// 	console.log('socket re-joined ', clientsInRoom.size)
-    //     if(clientsInRoom.size > 2 ) {
-    //         await socket.leave(id)
-    //         io.to(socket.id).emit('joinRoomError')
-    //     } else {
-    //         io.to(socket.id).emit('joinedRoomSuccessfully')
-    //     } 
-		
-	// 	if(io.sockets.adapter.rooms.get(id).size == 2){
-    //         io.to(id).emit('enableGameStart')
-    //     } 
-	// })
     
     socket.on('position', (obj) => {
         socket.to(roomID).emit("positionClicked", obj);
