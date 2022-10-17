@@ -40,7 +40,7 @@ const configuration = {
           credential: "openrelayproject"
         }
     ],
-    iceCandidatePoolSize: 10,
+    // iceCandidatePoolSize: 10,
     // iceServers: [
     //     {
     //       urls: "stun:openrelay.metered.ca:80",

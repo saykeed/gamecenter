@@ -17,19 +17,17 @@
                     </button>
                 </div>
 
-                <button v-if="rematch" class="btn-primary">Play Again {{rematch}}</button>
+                <button v-if="rematch" class="btn-primary" @click="requestGameRematch">Play Again</button>
             </div>
         </div>
         <IngameWidget v-if="gameStatus"/>
     </ingame-pages>
-    <keep-alive>
-        <IngameChatBox/>
-    </keep-alive>
+    <IngameChatBox/>
     <VideoCall v-if="videoCallStatus"/>
 </template>
 
 <script setup lang="ts">
-    import { onMounted, } from 'vue';
+    import { onMounted, onUnmounted, } from 'vue';
     import { useHandleConnection } from '../../../composables/tictactoe/HandleConnection';
     import { useRoute } from 'vue-router';
     import { useTicGameHandler } from '../../../composables/tictactoe/HandleTicGame'
@@ -37,26 +35,26 @@
     import IngameChatBox from '../../../components/IngameComps/IngameChatBox.vue';
     import VideoCall from '../../../components/VideoCall.vue';
     import { useVideoChat } from '../../../composables/tictactoe/HandleVideoChat';
+    import { enableReload, disableReload } from '../../../composables/UseUtils';
+    import { useStoredData } from '../../../composables/UseStorage';
 
     const route = useRoute()
     const { makeConnection } = useHandleConnection()
     const { videoCallStatus } =  useVideoChat()
-    const { board, tileClicked, ifDisabled, gameStatus, myTurn, rematch, rematchDesc, mySymbol } =  useTicGameHandler()
+    const { setRoomId } = useStoredData()
+    const { board, tileClicked, ifDisabled, gameStatus, myTurn, rematch, rematchDesc, mySymbol, requestGameRematch } =  useTicGameHandler()
 
 
-   onMounted(() => {
+    onMounted(() => {
+        setRoomId(route.params.id)
         makeConnection(route.params.id)
-   })
-    
-    
+        disableReload()
+    })
 
-    // full room event for use later
-    // socket.on('fullRoom', () => {
-    //     alert('room is full')
-    // })
-
+    onUnmounted(() => {
+        enableReload()
+    })
     
-
     const playerClicked = (index:number) => {
         tileClicked(index)
     }

@@ -1,8 +1,10 @@
 
 import { ref } from 'vue'
 import { useSocket } from '../socket/UseSocket'
+import { useAlert } from '../UseAlert'
 
 const {socket} = useSocket()
+const { openAlert } = useAlert()
 
 const board = ref(['','','','','','','','',''])
 const disabledTiles = ref<number[]>([])
@@ -15,6 +17,12 @@ const rematchDesc = ref('')
 // socket.value?.emit('position', {pos:index, symbol:mySymbol.value})
 
 export const useTicGameHandler = () => {
+
+    const resetGame = () => {
+        board.value = ['','','','','','','','',''];
+        disabledTiles.value = []
+        gameStatus.value = false
+    }
 
     const disableAllButton = () => {
         disabledTiles.value = [0,1,2,3,4,5,6,7,8]
@@ -74,14 +82,48 @@ export const useTicGameHandler = () => {
         })
     }
 
-    const setupFirstSocket = () => {
-        socket.value?.on('enableFirstSocket', (obj:{symbol:string, turn:boolean}) => {
+    const requestGameRematch = () => {
+        socket.value?.emit('gameRematch')
+        resetGame()
+        myTurn.value = true
+        socket.value?.on('rematchAcepted', () => {
+            rematch.value = false
+            openAlert('Rematch Accepted')
+            gameStatus.value = true
+        })
+
+        socket.value?.on('rematchRejected', () => {
+            openAlert('Ooops Opponent Rejects the Rematch!!!')
+        })
+    }
+
+    const handleGameRematch = () => {
+        socket.value?.on('gameRematchRequest', () => {
+            let accept = confirm('Opponent requests for game rematch')
+            if(accept) {
+                resetGame()
+                rematch.value = false
+                myTurn.value = false
+                gameStatus.value = true
+                socket.value?.emit('gameRematchAccepted')
+            } else {
+                socket.value?.emit('gameRematchRejected')
+            }
+        })
+    }
+
+    const setupEachPlayer = () => {
+        socket.value?.on('lastJoinerSymbol', (obj:{symbol:string, turn:boolean}) => {
+            mySymbol.value = obj.symbol
+            myTurn.value = obj.turn
+        })
+
+		socket.value?.on('firstJoinerSymbol', (obj:{symbol:string, turn:boolean}) => {
             mySymbol.value = obj.symbol
             myTurn.value = obj.turn
         })
     }
     
-
     const ifDisabled = (index:number) => {
         if(!gameStatus.value || !myTurn.value) return true
         if(disabledTiles.value.includes(index)) {
@@ -140,5 +182,5 @@ export const useTicGameHandler = () => {
 
     return { tileClicked, ifDisabled, board, rematch, rematchDesc, 
         handleGameStart, gameStatus, myTurn, handleGameUpdate, handleGameEnd,
-        setupFirstSocket, mySymbol }
+        setupEachPlayer, mySymbol, handleGameRematch, requestGameRematch }
 }
