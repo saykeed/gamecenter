@@ -40,7 +40,7 @@ const configuration = {
           credential: "openrelayproject"
         }
     ],
-    // iceCandidatePoolSize: 10,
+    iceCandidatePoolSize: 10,
     // iceServers: [
     //     {
     //       urls: "stun:openrelay.metered.ca:80",
@@ -63,38 +63,38 @@ const configuration = {
     // ]
 }
 const joinConfig = {
-    // iceServers: [
-    //   {
-    //     urls: [
-    //       'stun:stun1.l.google.com:19302',
-    //       'stun:stun2.l.google.com:19302',
-    //     ],
-    //   },
-    // ],
-    // iceCandidatePoolSize: 10,
-	iceServers: [
-        // {
-        //   urls: [
-        //     'stun:stun1.l.google.com:19302',
-        //     'stun:stun2.l.google.com:19302',
-        //   ],
-        // },
-        {
-          urls: "turn:openrelay.metered.ca:80",
-          username: "openrelayproject",
-          credential: "openrelayproject"
-        },
-        {
-          urls: "turn:openrelay.metered.ca:443",
-          username: "openrelayproject",
-          credential: "openrelayproject"
-        },
-        {
-          urls: "turn:openrelay.metered.ca:443?transport=tcp",
-          username: "openrelayproject",
-          credential: "openrelayproject"
-        }
+    iceServers: [
+      {
+        urls: [
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
     ],
+    iceCandidatePoolSize: 10,
+	// iceServers: [
+    //     // {
+    //     //   urls: [
+    //     //     'stun:stun1.l.google.com:19302',
+    //     //     'stun:stun2.l.google.com:19302',
+    //     //   ],
+    //     // },
+    //     {
+    //       urls: "turn:openrelay.metered.ca:80",
+    //       username: "openrelayproject",
+    //       credential: "openrelayproject"
+    //     },
+    //     {
+    //       urls: "turn:openrelay.metered.ca:443",
+    //       username: "openrelayproject",
+    //       credential: "openrelayproject"
+    //     },
+    //     {
+    //       urls: "turn:openrelay.metered.ca:443?transport=tcp",
+    //       username: "openrelayproject",
+    //       credential: "openrelayproject"
+    //     }
+    // ],
 }
 
 export const useVideoChat = () => {
@@ -182,13 +182,19 @@ export const useVideoChat = () => {
     async function makeCall() {
         videoCallStatus.value = true
         const peerConnection = new RTCPeerConnection(configuration);
-        socket.value?.on('incomingAnswer', async (ans) => {
+        addStreamToRTC(stream.value, peerConnection)
+		localIceListener(peerConnection, 'outgoingSenderIceCandidate')
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        socket.value?.emit('outgoingOffer', offer)
+        remoteTrackListener(peerConnection)
+		socket.value?.on('incomingAnswer', async (ans) => {
             if(ans) {
                 const remoteDesc = new RTCSessionDescription(ans);
                 await peerConnection.setRemoteDescription(remoteDesc);
             }
         })
-        socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
+		socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
             if(ice) {
                 console.log('received ice')
                 try {
@@ -198,13 +204,7 @@ export const useVideoChat = () => {
                 }
             }
         })
-        addStreamToRTC(stream.value, peerConnection)
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        socket.value?.emit('outgoingOffer', offer)
-        localIceListener(peerConnection, 'outgoingSenderIceCandidate')
         confirmPeerConnection(peerConnection)
-        remoteTrackListener(peerConnection)
         socket.value?.on('callRejected', () => {
             openAlert('Ooops!!! Opponent did not accept your video call request')
             videoCallStatus.value = false
@@ -229,6 +229,7 @@ export const useVideoChat = () => {
         videoCallStatus.value = true
         const peerConnection = new RTCPeerConnection(joinConfig);
         addStreamToRTC(stream.value, peerConnection) 
+		localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
         remoteTrackListener(peerConnection)  
         peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
         const answer = await peerConnection.createAnswer();
@@ -244,7 +245,6 @@ export const useVideoChat = () => {
                 }
             }
         })
-        localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
         confirmPeerConnection(peerConnection)
     }
 
