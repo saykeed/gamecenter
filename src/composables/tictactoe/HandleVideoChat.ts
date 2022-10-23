@@ -14,7 +14,8 @@ const videoCallStatus = ref(false)
 const userType = ref('')
 let receivedOffer = ref<any>()
 const stream = ref<MediaStream>()
-const remoteStream = ref<MediaStream>()
+// const remoteStream = ref<MediaStream>()
+let remoteStream = new MediaStream()
 // const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 const configuration = {
     iceServers: [
@@ -172,10 +173,14 @@ export const useVideoChat = () => {
 
     const remoteTrackListener = (peerConn:RTCPeerConnection) => {
         peerConn.addEventListener('track', async (event) => {
-            console.log('remote stream received')
-            const [Stream] = event.streams;
-            remoteStream.value = Stream
-            console.log(remoteStream.value)
+            // console.log('remote stream received')
+            // const [Stream] = event.streams;
+            // remoteStream.value = Stream
+            // console.log(remoteStream.value)
+			event.streams[0].getTracks().forEach(track => {
+				console.log('Add a track to the remoteStream:', track);
+				remoteStream.addTrack(track);
+			});
         });
     }
 
