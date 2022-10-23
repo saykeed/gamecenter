@@ -191,6 +191,7 @@ export const useVideoChat = () => {
 		localIceListener(peerConnection, 'outgoingSenderIceCandidate')
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
+		console.log('offer sent out')
         socket.value?.emit('outgoingOffer', offer)
         remoteTrackListener(peerConnection)
 		socket.value?.on('incomingAnswer', async (ans) => {

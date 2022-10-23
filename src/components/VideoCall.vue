@@ -46,10 +46,15 @@
         let local:any = document.querySelector('.localVid')
         local.srcObject = stream.value;
         
-        watch(remoteStream, (newX) => {
-            let remote:any = document.querySelector('.remoteVid')
+        // watch(remoteStream, (newX) => {
+        //     let remote:any = document.querySelector('.remoteVid')
+        //     remote.srcObject = remoteStream;
+        // })
+
+		setTimeout(() => {
+			let remote:any = document.querySelector('.remoteVid')
             remote.srcObject = remoteStream;
-        })
+		}, 5000);
         
     })
     
