@@ -48,7 +48,7 @@
         
         watch(remoteStream, (newX) => {
             let remote:any = document.querySelector('.remoteVid')
-            remote.srcObject = remoteStream.value;
+            remote.srcObject = remoteStream;
         })
         
     })
