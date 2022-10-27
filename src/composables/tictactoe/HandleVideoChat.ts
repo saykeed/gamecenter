@@ -153,15 +153,15 @@ export const useVideoChat = () => {
     }
 
 	const confirmIceConnectionState = (peerConn:RTCPeerConnection) => {
-		if(peerConn.iceConnectionState === 'connected') {
-			openAlert('ice connected')
-		} else if(peerConn.iceConnectionState === 'failed') {
+		if(peerConn.iceConnectionState === 'failed') {
 			openAlert('ice connection failed')
 		} else if(peerConn.iceConnectionState === 'completed') {
 			openAlert('ice connection completed')
 		} else if(peerConn.iceConnectionState === 'disconnected') {
 			openAlert('ice connection disconnected')
-		}
+		} else if(peerConn.iceConnectionState === 'connected') {
+			openAlert('ice connected')
+		} 
 	}
 
     const remoteTrackListener = (peerConn:RTCPeerConnection) => {
