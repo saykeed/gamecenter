@@ -56,6 +56,7 @@ export const useTicGameHandler = () => {
 
     const handleGameStart = () => {
         socket.value?.on('enableGameStart', () => {
+			console.log('enable game start')
             gameStatus.value = true
         })
     }

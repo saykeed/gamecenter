@@ -25,13 +25,6 @@ export const useHandleConnection = () => {
         })
     }
 
-	const joinRoomAgain = (id:any, socket:any) => {
-        return new Promise((rs, rj) => {
-            socket.emit('rejoinRoom', id)
-            socket.on('joinedRoomSuccessfully', () => { rs(true) })
-            socket.on('joinRoomError', () => { rj('Room is full') })
-        })
-    }
 
     const makeConnection = (id:any) => {
         openLoader('Joining Game Room')
@@ -61,33 +54,7 @@ export const useHandleConnection = () => {
         })
     }
 
-	// const rejoinRoom = (id:any) => {
-	// 	openLoader('Rejoining Game room after disconnection')
-    //     connectSocket()
-    //     .then((socket) => {
-    //         closeLoader()
-    //         joinRoomAgain(id, socket)
-    //         .then(() => {
-    //             handleGameStart()
-    //             handleGameUpdate()
-    //             setupFirstSocket()
-    //             handleGameEnd()
-    //             handleGameRematch()
-    //             handleMessages()
-    //             handleIncomingWebrtcData()
-    //         })
-    //         .catch((err) => {
-    //             openAlert(err)
-    //             router.push('/games/tictactoe')
-    //         })
-    //     })
-    //     .catch((err) => {
-    //         closeLoader()
-    //         console.log(err)
-    //         openAlert('Could not join room')
-    //         router.push('/games/tictactoe')
-    //     })
-	// }
+	
 
     socket.value?.on('socketDisconnected', () => {
         openAlert('your socket got disconected')
