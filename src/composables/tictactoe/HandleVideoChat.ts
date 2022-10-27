@@ -15,6 +15,7 @@ const userType = ref('')
 let receivedOffer = ref<any>()
 const stream = ref<MediaStream>()
 const remoteStream = ref<MediaStream>()
+let overSeerPeerConn = ref<RTCPeerConnection>()
 // let remoteStream = new MediaStream()
 // const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 const configuration = {
@@ -208,6 +209,7 @@ export const useVideoChat = () => {
             openAlert('Ooops!!! Opponent did not accept your video call request')
             videoCallStatus.value = false
         })
+		overSeerPeerConn.value = peerConnection
     }
     
     const handleIncomingWebrtcData = () => {
@@ -237,6 +239,7 @@ export const useVideoChat = () => {
         socket.value?.on('incomingSenderIceCandidate', async (ice) => {
             if(ice) {
                 console.log('received ice')
+				console.log(ice)
                 try {
                     await peerConnection.addIceCandidate(ice);
 					confirmIceConnectionState(peerConnection)
@@ -246,6 +249,7 @@ export const useVideoChat = () => {
             }
         })
         confirmPeerConnection(peerConnection)
+		overSeerPeerConn.value = peerConnection
     }
 
 
@@ -288,5 +292,18 @@ export const useVideoChatOptions = () => {
         minimizeVideoChat.value = !minimizeVideoChat.value
     }
 
-    return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout }
+	const hangUp = () => {
+		stream.value?.getTracks().forEach(track => track.stop())
+		if(remoteStream.value != undefined) {
+			remoteStream.value?.getTracks().forEach(track => track.stop())
+		}
+		if(overSeerPeerConn.value != undefined) {
+			overSeerPeerConn.value?.close()
+		}
+		stream.value = undefined
+		remoteStream.value = undefined
+		videoCallStatus.value = false
+	}
+
+    return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout, hangUp }
 }
