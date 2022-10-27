@@ -184,29 +184,29 @@ export const useVideoChat = () => {
 		localIceListener(peerConnection, 'outgoingSenderIceCandidate')
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
-		console.log('offer sent out')
+		console.log('set local: ', peerConnection.localDescription)
         socket.value?.emit('outgoingOffer', offer)
         remoteTrackListener(peerConnection)
 		socket.value?.on('incomingAnswer', async (ans) => {
             if(ans) {
                 const remoteDesc = new RTCSessionDescription(ans);
                 await peerConnection.setRemoteDescription(remoteDesc);
-				console.log('remote description set')
+				console.log('remote description set ', peerConnection.remoteDescription)
 				addIncomingIce()
             }
         })
 		const addIncomingIce = () => {
-			// socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
-			// 	if(ice) {
-			// 		console.log('received ice')
-			// 		try {
-			// 			await peerConnection.addIceCandidate(ice);
-			// 			confirmIceConnectionState(peerConnection)
-			// 		} catch (e) {
-			// 			console.error('Error adding received ice candidate', e);
-			// 		}
-			// 	}
-			// })
+			socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
+				if(ice) {
+					console.log('received ice')
+					try {
+						await peerConnection.addIceCandidate(ice);
+						confirmIceConnectionState(peerConnection)
+					} catch (e) {
+						console.error('Error adding received ice candidate', e);
+					}
+				}
+			})
 		}
 		
         confirmPeerConnection(peerConnection)
@@ -238,22 +238,23 @@ export const useVideoChat = () => {
 		localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
         remoteTrackListener(peerConnection)  
         await peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
-		console.log('remote description set')
+		console.log('remote description set: ', peerConnection.remoteDescription)
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
+		console.log('set local: ', peerConnection.localDescription)
         socket.value?.emit('outgoingAnswer', answer)
-        // socket.value?.on('incomingSenderIceCandidate', async (ice) => {
-        //     if(ice) {
-        //         console.log('received ice')
-		// 		console.log(ice)
-        //         try {
-        //             await peerConnection.addIceCandidate(ice);
-		// 			confirmIceConnectionState(peerConnection)
-        //         } catch (e) {
-        //             console.error('Error adding received ice candidate', e);
-        //         }
-        //     }
-        // })
+        socket.value?.on('incomingSenderIceCandidate', async (ice) => {
+            if(ice) {
+                console.log('received ice')
+				// console.log(ice)
+                try {
+                    await peerConnection.addIceCandidate(ice);
+					confirmIceConnectionState(peerConnection)
+                } catch (e) {
+                    console.error('Error adding received ice candidate', e);
+                }
+            }
+        })
         confirmPeerConnection(peerConnection)
 		overSeerPeerConn.value = peerConnection
     }
