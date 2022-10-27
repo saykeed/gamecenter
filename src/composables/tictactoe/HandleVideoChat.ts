@@ -196,17 +196,17 @@ export const useVideoChat = () => {
             }
         })
 		const addIncomingIce = () => {
-			socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
-				if(ice) {
-					console.log('received ice')
-					try {
-						await peerConnection.addIceCandidate(ice);
-						confirmIceConnectionState(peerConnection)
-					} catch (e) {
-						console.error('Error adding received ice candidate', e);
-					}
-				}
-			})
+			// socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
+			// 	if(ice) {
+			// 		console.log('received ice')
+			// 		try {
+			// 			await peerConnection.addIceCandidate(ice);
+			// 			confirmIceConnectionState(peerConnection)
+			// 		} catch (e) {
+			// 			console.error('Error adding received ice candidate', e);
+			// 		}
+			// 	}
+			// })
 		}
 		
         confirmPeerConnection(peerConnection)
@@ -242,18 +242,18 @@ export const useVideoChat = () => {
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         socket.value?.emit('outgoingAnswer', answer)
-        socket.value?.on('incomingSenderIceCandidate', async (ice) => {
-            if(ice) {
-                console.log('received ice')
-				console.log(ice)
-                try {
-                    await peerConnection.addIceCandidate(ice);
-					confirmIceConnectionState(peerConnection)
-                } catch (e) {
-                    console.error('Error adding received ice candidate', e);
-                }
-            }
-        })
+        // socket.value?.on('incomingSenderIceCandidate', async (ice) => {
+        //     if(ice) {
+        //         console.log('received ice')
+		// 		console.log(ice)
+        //         try {
+        //             await peerConnection.addIceCandidate(ice);
+		// 			confirmIceConnectionState(peerConnection)
+        //         } catch (e) {
+        //             console.error('Error adding received ice candidate', e);
+        //         }
+        //     }
+        // })
         confirmPeerConnection(peerConnection)
 		overSeerPeerConn.value = peerConnection
     }
