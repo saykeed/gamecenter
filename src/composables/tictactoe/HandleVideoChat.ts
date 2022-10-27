@@ -191,19 +191,23 @@ export const useVideoChat = () => {
             if(ans) {
                 const remoteDesc = new RTCSessionDescription(ans);
                 await peerConnection.setRemoteDescription(remoteDesc);
+				addIncomingIce()
             }
         })
-		socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
-            if(ice) {
-                console.log('received ice')
-                try {
-                    await peerConnection.addIceCandidate(ice);
-					confirmIceConnectionState(peerConnection)
-                } catch (e) {
-                    console.error('Error adding received ice candidate', e);
-                }
-            }
-        })
+		const addIncomingIce = () => {
+			socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
+				if(ice) {
+					console.log('received ice')
+					try {
+						await peerConnection.addIceCandidate(ice);
+						confirmIceConnectionState(peerConnection)
+					} catch (e) {
+						console.error('Error adding received ice candidate', e);
+					}
+				}
+			})
+		}
+		
         confirmPeerConnection(peerConnection)
         socket.value?.on('callRejected', () => {
             openAlert('Ooops!!! Opponent did not accept your video call request')
@@ -232,7 +236,7 @@ export const useVideoChat = () => {
         addStreamToRTC(stream.value, peerConnection) 
 		localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
         remoteTrackListener(peerConnection)  
-        peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         socket.value?.emit('outgoingAnswer', answer)
