@@ -191,6 +191,7 @@ export const useVideoChat = () => {
             if(ans) {
                 const remoteDesc = new RTCSessionDescription(ans);
                 await peerConnection.setRemoteDescription(remoteDesc);
+				console.log('remote description set')
 				addIncomingIce()
             }
         })
@@ -237,6 +238,7 @@ export const useVideoChat = () => {
 		localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
         remoteTrackListener(peerConnection)  
         await peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
+		console.log('remote description set')
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         socket.value?.emit('outgoingAnswer', answer)
