@@ -9,12 +9,9 @@
 </template>
 
 <script setup lang="ts">
-
     import { useAlert } from '../../composables/UseAlert';
 
     const { alertStatus, alertMsg, closeAlert } = useAlert()
-
-
     
 </script>
 

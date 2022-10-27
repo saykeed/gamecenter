@@ -47,6 +47,7 @@ import IngameWidget from './components/IngameComps/IngameWidget.vue'
         // .catch(error => {
         //     console.error('Error accessing media devices.', error);
         // });
+		
     })
     
 </script>

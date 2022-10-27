@@ -14,8 +14,8 @@ const videoCallStatus = ref(false)
 const userType = ref('')
 let receivedOffer = ref<any>()
 const stream = ref<MediaStream>()
-// const remoteStream = ref<MediaStream>()
-let remoteStream = new MediaStream()
+const remoteStream = ref<MediaStream>()
+// let remoteStream = new MediaStream()
 // const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 const configuration = {
     iceServers: [
@@ -42,26 +42,6 @@ const configuration = {
         }
     ],
     iceCandidatePoolSize: 10,
-    // iceServers: [
-    //     {
-    //       urls: "stun:openrelay.metered.ca:80",
-    //     },
-    //     {
-    //       urls: "turn:openrelay.metered.ca:80",
-    //       username: "openrelayproject",
-    //       credential: "openrelayproject",
-    //     },
-    //     {
-    //       urls: "turn:openrelay.metered.ca:443",
-    //       username: "openrelayproject",
-    //       credential: "openrelayproject",
-    //     },
-    //     {
-    //       urls: "turn:openrelay.metered.ca:443?transport=tcp",
-    //       username: "openrelayproject",
-    //       credential: "openrelayproject",
-    //     }
-    // ]
 }
 const joinConfig = {
     iceServers: [
@@ -171,16 +151,28 @@ export const useVideoChat = () => {
         });
     }
 
+	const confirmIceConnectionState = (peerConn:RTCPeerConnection) => {
+		if(peerConn.iceConnectionState === 'connected') {
+			openAlert('ice connected')
+		} else if(peerConn.iceConnectionState === 'failed') {
+			openAlert('ice connection failed')
+		} else if(peerConn.iceConnectionState === 'completed') {
+			openAlert('ice connection completed')
+		} else if(peerConn.iceConnectionState === 'disconnected') {
+			openAlert('ice connection disconnected')
+		}
+	}
+
     const remoteTrackListener = (peerConn:RTCPeerConnection) => {
         peerConn.addEventListener('track', async (event) => {
-            // console.log('remote stream received')
-            // const [Stream] = event.streams;
-            // remoteStream.value = Stream
-            // console.log(remoteStream.value)
-			event.streams[0].getTracks().forEach(track => {
-				console.log('Add a track to the remoteStream:', track);
-				remoteStream.addTrack(track);
-			});
+            console.log('remote stream received')
+            const [Stream] = event.streams;
+            remoteStream.value = Stream
+            console.log(remoteStream.value)
+			// event.streams[0].getTracks().forEach(track => {
+			// 	console.log('Add a track to the remoteStream:', track);
+			// 	remoteStream.addTrack(track);
+			// });
         });
     }
 
@@ -205,6 +197,7 @@ export const useVideoChat = () => {
                 console.log('received ice')
                 try {
                     await peerConnection.addIceCandidate(ice);
+					confirmIceConnectionState(peerConnection)
                 } catch (e) {
                     console.error('Error adding received ice candidate', e);
                 }
@@ -246,6 +239,7 @@ export const useVideoChat = () => {
                 console.log('received ice')
                 try {
                     await peerConnection.addIceCandidate(ice);
+					confirmIceConnectionState(peerConnection)
                 } catch (e) {
                     console.error('Error adding received ice candidate', e);
                 }
