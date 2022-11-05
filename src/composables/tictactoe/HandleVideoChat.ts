@@ -13,7 +13,7 @@ const { openLoader, closeLoader } = useLoader()
 
 
 
-// let peer: Peer;
+let peer: Peer;
 const videoCallStatus = ref(false)
 const userType = ref('')
 let receivedOffer = ref<any>()
@@ -111,8 +111,7 @@ export const useVideoChat = () => {
         return await navigator.mediaDevices.getUserMedia(constraints);
     }
 
-    const requestVideoChat = async (user:string) => {
-        userType.value = user
+    const getLocalSteam = async () => {
         navigator.mediaDevices.getUserMedia(constraints)
         .then(() => {
             getConnectedDevices('videoinput').then(data => {
@@ -129,18 +128,18 @@ export const useVideoChat = () => {
     const selectDevice = (selectedCam:MediaDeviceInfo) => {
         openCamera(selectedCam.deviceId).then(dataStream => {
             stream.value = dataStream
-            if(userType.value === 'sender') {
-                makeCall()
-            } else {
-                receiveCall()
-            }
+            // if(userType.value === 'sender') {
+            //     makeCall()
+            // } else {
+            //     receiveCall()
+            // }
         })
     }
 
     
 
     async function makeCall() {
-		const peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
+		
 		socket.value?.emit('outgoingOffer', peer.id)
 		openLoader('Waiting for opponent to receive call')
 		peer.on("connection", (conn) => {
@@ -162,44 +161,66 @@ export const useVideoChat = () => {
     }
     
     const handleIncomingWebrtcData = () => {
+		peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
 
-		
+		peer.on("connection", (conn) => {
+			conn.on("data", (data) => {
+				console.log(data);
+			});
+			conn.on("open", () => {
+				conn.send("caller");
+			});
+		});
 
-		// peer.on("call", (call) => {
-		// 	call.answer(stream.value); // Answer the call with an A/V stream.
-		// 	call.on("stream", (remoteVid) => {
-		// 		// Show stream in some <video> element.
-		// 		remoteStream.value = remoteVid
-		// 	});
-		// })
+		peer.on("call", (call) => {
+			try {
+				getLocalSteam()
+				call.answer(stream.value); 
+				call.on("stream", (remoteVid) => {
+					remoteStream.value = remoteVid
+				});
+				videoCallStatus.value = true
+			} catch (error) {
+				videoCallStatus.value = false
+				openAlert('error')
+			}
+			
+		});
 		
 		socket.value?.on('incomingOffer', async (id) => {
 			if (id) {
 				let accept = confirm('Opponent requests a video call')
 				if(accept) {
-					// const conn = peer.connect(id);
-					// conn.on("open", () => {
-					// 	conn.send("connected!");
-					// 	// await requestVideoChat('receiver')
-					// });
 					receiveCall(id)
 				} else {
 					socket.value?.emit('rejectCall')
 				}
 			}
 		})
-
-		// peer.on("connection", (conn) => {
-		// 	conn.on("data", (data) => {
-		// 		alert(data);
-		// 		videoCallStatus.value = true
-		// 	});
-		// });
-
-		
-
 		
     }
+
+	const startCall = async (id: any) => {
+		const conn = peer.connect(id)
+		conn.on("data", (data) => {
+			console.log(data);
+		});
+		conn.on("open", () => {
+			conn.send("receiver");
+		});
+		try {
+			getLocalSteam()
+			videoCallStatus.value = true
+			const call = peer.call(id, stream.value!);
+			call.on("stream", (remoteVid) => {
+				remoteStream.value = remoteVid
+			});
+		} catch (error) {
+			videoCallStatus.value = false
+			openAlert('error')
+		}
+		
+	}
 
     const receiveCall = async (id:any) => {
 		const peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
@@ -211,7 +232,7 @@ export const useVideoChat = () => {
     }
 
 
-    return { requestVideoChat, selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus, makeCall}
+    return { selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus, makeCall}
 }
 
 
