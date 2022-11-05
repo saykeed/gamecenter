@@ -11,6 +11,7 @@
   "dependencies": {
     "@vueuse/core": "^9.3.0",
     "nodemon": "^2.0.19",
+    "peerjs": "^1.4.7",
     "socket.io": "^4.5.1",
     "socket.io-client": "^4.5.1",
     "sweetalert2": "^11.6.2",

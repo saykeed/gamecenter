@@ -10,7 +10,7 @@ export const useSocket = () => {
     const connectSocket = () => {
         return new Promise<any>((rs, rj) => {
             socket.value = io(url);
-            
+
             socket.value.on('connect', () => {
                 rs(socket.value)
             })

@@ -2,6 +2,7 @@ import {ref} from 'vue'
 import { useSocket } from '../socket/UseSocket'
 import { useAlert } from '../UseAlert'
 import { useModal } from '../UseModal'
+import { Peer } from "peerjs";
 
 const { socket } = useSocket()
 const { openAlert } = useAlert()
@@ -9,7 +10,7 @@ const { openModal } =  useModal()
 
 
 
-
+let peer: Peer;
 const videoCallStatus = ref(false)
 const userType = ref('')
 let receivedOffer = ref<any>()
@@ -80,6 +81,7 @@ const joinConfig = {
 }
 
 export const useVideoChat = () => {
+	
     const constraints = {
         'video': true,
         'audio': true
@@ -107,16 +109,19 @@ export const useVideoChat = () => {
     }
 
     const requestVideoChat = async (user:string) => {
-        userType.value = user
-        navigator.mediaDevices.getUserMedia(constraints)
-        .then(() => {
-            getConnectedDevices('videoinput').then(data => {
-                openModal(data)
-            })
-        })
-        .catch(() => {
-            openAlert('Could not access media devices')
-        }) 
+        // userType.value = user
+        // navigator.mediaDevices.getUserMedia(constraints)
+        // .then(() => {
+        //     getConnectedDevices('videoinput').then(data => {
+        //         openModal(data)
+        //     })
+        // })
+        // .catch(() => {
+        //     openAlert('Could not access media devices')
+        // }) 
+
+		console.log('making call', peer._id)
+		socket.value?.emit('outgoingOffer', peer._id)
     }
 
     const selectDevice = (selectedCam:MediaDeviceInfo) => {
@@ -178,57 +183,97 @@ export const useVideoChat = () => {
     }
 
     async function makeCall() {
-        videoCallStatus.value = true
-        const peerConnection = new RTCPeerConnection(configuration);
-        addStreamToRTC(stream.value, peerConnection)
-		localIceListener(peerConnection, 'outgoingSenderIceCandidate')
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-		console.log('set local: ', peerConnection.localDescription)
-        socket.value?.emit('outgoingOffer', offer)
-        remoteTrackListener(peerConnection)
-		socket.value?.on('incomingAnswer', async (ans) => {
-            if(ans) {
-                const remoteDesc = new RTCSessionDescription(ans);
-                await peerConnection.setRemoteDescription(remoteDesc);
-				console.log('remote description set ', peerConnection.remoteDescription)
-				addIncomingIce()
-            }
-        })
-		const addIncomingIce = () => {
-			socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
-				if(ice) {
-					console.log('received ice')
-					try {
-						await peerConnection.addIceCandidate(ice);
-						confirmIceConnectionState(peerConnection)
-					} catch (e) {
-						console.error('Error adding received ice candidate', e);
-					}
-				}
-			})
-		}
 		
-        confirmPeerConnection(peerConnection)
-        socket.value?.on('callRejected', () => {
-            openAlert('Ooops!!! Opponent did not accept your video call request')
-            videoCallStatus.value = false
-        })
-		overSeerPeerConn.value = peerConnection
+		// console.log(peer._id)
+
+
+        // videoCallStatus.value = true
+        // const peerConnection = new RTCPeerConnection(configuration);
+        // addStreamToRTC(stream.value, peerConnection)
+		// localIceListener(peerConnection, 'outgoingSenderIceCandidate')
+        // const offer = await peerConnection.createOffer();
+        // await peerConnection.setLocalDescription(offer);
+		// console.log('set local: ', peerConnection.localDescription)
+        // socket.value?.emit('outgoingOffer', offer)
+        // remoteTrackListener(peerConnection)
+		// socket.value?.on('incomingAnswer', async (ans) => {
+        //     if(ans) {
+        //         const remoteDesc = new RTCSessionDescription(ans);
+        //         await peerConnection.setRemoteDescription(remoteDesc);
+		// 		console.log('remote description set ', peerConnection.remoteDescription)
+		// 		addIncomingIce()
+        //     }
+        // })
+		// const addIncomingIce = () => {
+		// 	socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
+		// 		if(ice) {
+		// 			console.log('received ice')
+		// 			try {
+		// 				await peerConnection.addIceCandidate(ice);
+		// 				confirmIceConnectionState(peerConnection)
+		// 			} catch (e) {
+		// 				console.error('Error adding received ice candidate', e);
+		// 			}
+		// 		}
+		// 	})
+		// }
+		
+        // confirmPeerConnection(peerConnection)
+        // socket.value?.on('callRejected', () => {
+        //     openAlert('Ooops!!! Opponent did not accept your video call request')
+        //     videoCallStatus.value = false
+        // })
+		// overSeerPeerConn.value = peerConnection
     }
     
     const handleIncomingWebrtcData = () => {
-        socket.value?.on('incomingOffer', async (offer) => {
-            if (offer) {
-                let accept = confirm('Opponent requests a video call')
-                if(accept) {
-                    receivedOffer.value = offer
-                    requestVideoChat('receiver')
-                } else {
-                    socket.value?.emit('rejectCall')
-                }
-            }
-        })
+        // socket.value?.on('incomingOffer', async (offer) => {
+        //     if (offer) {
+        //         let accept = confirm('Opponent requests a video call')
+        //         if(accept) {
+        //             receivedOffer.value = offer
+        //             requestVideoChat('receiver')
+        //         } else {
+        //             socket.value?.emit('rejectCall')
+        //         }
+        //     }
+        // })
+		peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
+		// socket.value?.on('incomingPeerId', async (id) => {
+		// 	alert('received peer id')
+        //     const conn = peer.connect(id);
+		// 	conn.on("open", () => {
+		// 		alert('peer connected, sending hi')
+		// 		conn.send("hi!");
+		// 	});
+        // })
+
+		socket.value?.on('incomingOffer', async (offer) => {
+			if (offer) {
+				let accept = confirm('Opponent requests a video call')
+				if(accept) {
+					const conn = peer.connect(offer);
+					conn.on("open", () => {
+						alert('peer connected, sending hi')
+						conn.send("hi!");
+					});
+				} else {
+					socket.value?.emit('rejectCall')
+				}
+			}
+		})
+
+		peer.on("connection", (conn) => {
+			conn.on("data", (data) => {
+				// Will print 'hi!'
+				alert(data);
+			});
+			conn.on("open", () => {
+				conn.send("hello!");
+			});
+		});
+
+		
     }
 
     const receiveCall = async () => {

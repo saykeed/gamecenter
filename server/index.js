@@ -90,7 +90,13 @@ io.on("connection", (socket) => {
     //         console.log('transport close', io.sockets.adapter.rooms.get(roomID).size)
     //     }
     // });
-    
+
+	// for peer id connection
+	// socket.on('sendPeer', (msg) => {
+	// 	console.log('hello ', msg)
+    //     socket.to(roomID).emit("incomingPeerId", msg);
+    // })
+	
 });
 
 
