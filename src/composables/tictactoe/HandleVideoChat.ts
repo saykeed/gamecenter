@@ -191,7 +191,7 @@ export const useVideoChat = () => {
 			if (id) {
 				let accept = confirm('Opponent requests a video call')
 				if(accept) {
-					receiveCall(id)
+					startCall(id)
 				} else {
 					socket.value?.emit('rejectCall')
 				}
@@ -222,14 +222,6 @@ export const useVideoChat = () => {
 		
 	}
 
-    const receiveCall = async (id:any) => {
-		const peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
-		const conn = peer.connect(id);
-		conn.on("open", () => {
-			conn.send("connected!");
-		});
-        
-    }
 
 
     return { selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus, makeCall}
