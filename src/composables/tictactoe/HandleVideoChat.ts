@@ -137,109 +137,35 @@ export const useVideoChat = () => {
         })
     }
 
-    const addStreamToRTC = (stream:MediaStream | undefined, peerConn:RTCPeerConnection) => {
-        stream?.getTracks().forEach(track => {
-            peerConn.addTrack(track, stream);
-        });
-        console.log('stream sent out')
-    }
-    const localIceListener = (peerConn:RTCPeerConnection, socketEventName:string) => {
-        peerConn.addEventListener('icecandidate', event => {
-            if (event.candidate) {
-                socket.value?.emit(socketEventName, event.candidate)
-            }
-            console.log('ice sent out')
-        });
-    }
-    const confirmPeerConnection = (peerConn:RTCPeerConnection) => {
-        peerConn.addEventListener('connectionstatechange', event => {
-            if (peerConn.connectionState === 'connected') {
-                openAlert('Peers Connected successfully')
-            }
-        });
-    }
-
-	const confirmIceConnectionState = (peerConn:RTCPeerConnection) => {
-		if(peerConn.iceConnectionState === 'failed') {
-			openAlert('ice connection failed')
-		} else if(peerConn.iceConnectionState === 'completed') {
-			openAlert('ice connection completed')
-		} else if(peerConn.iceConnectionState === 'disconnected') {
-			openAlert('ice connection disconnected')
-		} else if(peerConn.iceConnectionState === 'connected') {
-			openAlert('ice connected')
-		} 
-	}
-
-    const remoteTrackListener = (peerConn:RTCPeerConnection) => {
-        peerConn.addEventListener('track', async (event) => {
-            console.log('remote stream received')
-            const [Stream] = event.streams;
-            remoteStream.value = Stream
-            console.log(remoteStream.value)
-			// event.streams[0].getTracks().forEach(track => {
-			// 	console.log('Add a track to the remoteStream:', track);
-			// 	remoteStream.addTrack(track);
-			// });
-        });
-    }
+    
 
     async function makeCall() {
 		socket.value?.emit('outgoingOffer', peer.id)
-		// openLoader('Waiting for opponent to receive call')
-		videoCallStatus.value = true
+		openLoader('Waiting for opponent to receive call')
+		peer.on("connection", (conn) => {
+			conn.on("data", (data) => {
+				closeLoader()
+				alert(data);
+				videoCallStatus.value = true
+				
+			});
+			conn.on("open", () => {
+				conn.send("hello!");
+			});
+		});
+		socket.value?.on('callRejected', () => {
+			closeLoader()
+			openAlert('call rejected')
+			return;
+		})
 		
 		
-        // const peerConnection = new RTCPeerConnection(configuration);
-        // addStreamToRTC(stream.value, peerConnection)
-		// localIceListener(peerConnection, 'outgoingSenderIceCandidate')
-        // const offer = await peerConnection.createOffer();
-        // await peerConnection.setLocalDescription(offer);
-		// console.log('set local: ', peerConnection.localDescription)
-        // socket.value?.emit('outgoingOffer', offer)
-        // remoteTrackListener(peerConnection)
-		// socket.value?.on('incomingAnswer', async (ans) => {
-        //     if(ans) {
-        //         const remoteDesc = new RTCSessionDescription(ans);
-        //         await peerConnection.setRemoteDescription(remoteDesc);
-		// 		console.log('remote description set ', peerConnection.remoteDescription)
-		// 		addIncomingIce()
-        //     }
-        // })
-		// const addIncomingIce = () => {
-		// 	socket.value?.on('incomingReceiverIceCandidate', async (ice) => {
-		// 		if(ice) {
-		// 			console.log('received ice')
-		// 			try {
-		// 				await peerConnection.addIceCandidate(ice);
-		// 				confirmIceConnectionState(peerConnection)
-		// 			} catch (e) {
-		// 				console.error('Error adding received ice candidate', e);
-		// 			}
-		// 		}
-		// 	})
-		// }
 		
-        // confirmPeerConnection(peerConnection)
-        // socket.value?.on('callRejected', () => {
-        //     openAlert('Ooops!!! Opponent did not accept your video call request')
-        //     videoCallStatus.value = false
-        // })
-		// overSeerPeerConn.value = peerConnection
+       
     }
     
     const handleIncomingWebrtcData = () => {
-        // socket.value?.on('incomingOffer', async (offer) => {
-        //     if (offer) {
-        //         let accept = confirm('Opponent requests a video call')
-        //         if(accept) {
-        //             receivedOffer.value = offer
-        //             requestVideoChat('receiver')
-        //         } else {
-        //             socket.value?.emit('rejectCall')
-        //         }
-        //     }
-        // })
+
 		peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
 
 		peer.on("call", (call) => {
@@ -254,17 +180,11 @@ export const useVideoChat = () => {
 			if (id) {
 				let accept = confirm('Opponent requests a video call')
 				if(accept) {
-					// const conn = peer.connect(id);
-					// conn.on("open", () => {
-					// 	// conn.send("hi!");
-						requestVideoChat('receiver')
-					// });
-					const call = peer.call(id, stream.value!);
-					call.on("stream", (remoteVid) => {
-						// Show stream in some <video> element.
-						remoteStream.value = remoteVid
+					const conn = peer.connect(id);
+					conn.on("open", () => {
+						conn.send("connected!");
+						// await requestVideoChat('receiver')
 					});
-					
 				} else {
 					socket.value?.emit('rejectCall')
 				}
@@ -272,51 +192,24 @@ export const useVideoChat = () => {
 		})
 
 		peer.on("connection", (conn) => {
-			// conn.on("data", (data) => {
-			// 	alert(data);
-			// });
-			// conn.on("open", () => {
-			// 	conn.send("hello!");
-			// });
-			
-			// openAlert('peer connected successfully')
+			conn.on("data", (data) => {
+				alert(data);
+				videoCallStatus.value = true
+				
+			});
 		});
+
+		
 
 		
     }
 
     const receiveCall = async () => {
         videoCallStatus.value = true
-		
-		
-        // const peerConnection = new RTCPeerConnection(joinConfig);
-        // addStreamToRTC(stream.value, peerConnection) 
-		// localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
-        // remoteTrackListener(peerConnection)  
-        // await peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
-		// console.log('remote description set: ', peerConnection.remoteDescription)
-        // const answer = await peerConnection.createAnswer();
-        // await peerConnection.setLocalDescription(answer);
-		// console.log('set local: ', peerConnection.localDescription)
-        // socket.value?.emit('outgoingAnswer', answer)
-        // socket.value?.on('incomingSenderIceCandidate', async (ice) => {
-        //     if(ice) {
-        //         console.log('received ice')
-		// 		// console.log(ice)
-        //         try {
-        //             await peerConnection.addIceCandidate(ice);
-		// 			confirmIceConnectionState(peerConnection)
-        //         } catch (e) {
-        //             console.error('Error adding received ice candidate', e);
-        //         }
-        //     }
-        // })
-        // confirmPeerConnection(peerConnection)
-		// overSeerPeerConn.value = peerConnection
     }
 
 
-    return { requestVideoChat, selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus}
+    return { requestVideoChat, selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus, makeCall}
 }
 
 
@@ -370,3 +263,69 @@ export const useVideoChatOptions = () => {
 
     return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout, hangUp }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const addStreamToRTC = (stream:MediaStream | undefined, peerConn:RTCPeerConnection) => {
+// 	stream?.getTracks().forEach(track => {
+// 		peerConn.addTrack(track, stream);
+// 	});
+// 	console.log('stream sent out')
+// }
+// const localIceListener = (peerConn:RTCPeerConnection, socketEventName:string) => {
+// 	peerConn.addEventListener('icecandidate', event => {
+// 		if (event.candidate) {
+// 			socket.value?.emit(socketEventName, event.candidate)
+// 		}
+// 		console.log('ice sent out')
+// 	});
+// }
+// const confirmPeerConnection = (peerConn:RTCPeerConnection) => {
+// 	peerConn.addEventListener('connectionstatechange', event => {
+// 		if (peerConn.connectionState === 'connected') {
+// 			openAlert('Peers Connected successfully')
+// 		}
+// 	});
+// }
+
+// const confirmIceConnectionState = (peerConn:RTCPeerConnection) => {
+// 	if(peerConn.iceConnectionState === 'failed') {
+// 		openAlert('ice connection failed')
+// 	} else if(peerConn.iceConnectionState === 'completed') {
+// 		openAlert('ice connection completed')
+// 	} else if(peerConn.iceConnectionState === 'disconnected') {
+// 		openAlert('ice connection disconnected')
+// 	} else if(peerConn.iceConnectionState === 'connected') {
+// 		openAlert('ice connected')
+// 	} 
+// }
+
+// const remoteTrackListener = (peerConn:RTCPeerConnection) => {
+// 	peerConn.addEventListener('track', async (event) => {
+// 		console.log('remote stream received')
+// 		const [Stream] = event.streams;
+// 		remoteStream.value = Stream
+// 		console.log(remoteStream.value)
+// 		// event.streams[0].getTracks().forEach(track => {
+// 		// 	console.log('Add a track to the remoteStream:', track);
+// 		// 	remoteStream.addTrack(track);
+// 		// });
+// 	});
+// }
