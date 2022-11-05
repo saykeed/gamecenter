@@ -109,19 +109,18 @@ export const useVideoChat = () => {
     }
 
     const requestVideoChat = async (user:string) => {
-        // userType.value = user
-        // navigator.mediaDevices.getUserMedia(constraints)
-        // .then(() => {
-        //     getConnectedDevices('videoinput').then(data => {
-        //         openModal(data)
-        //     })
-        // })
-        // .catch(() => {
-        //     openAlert('Could not access media devices')
-        // }) 
+        userType.value = user
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(() => {
+            getConnectedDevices('videoinput').then(data => {
+                openModal(data)
+            })
+        })
+        .catch(() => {
+            openAlert('Could not access media devices')
+        })
 
-		// console.log('making call', peer.id)
-		socket.value?.emit('outgoingOffer', peer.id)
+		
     }
 
     const selectDevice = (selectedCam:MediaDeviceInfo) => {
@@ -183,11 +182,10 @@ export const useVideoChat = () => {
     }
 
     async function makeCall() {
+		socket.value?.emit('outgoingOffer', peer.id)
+		videoCallStatus.value = true
 		
-		// console.log(peer._id)
-
-
-        // videoCallStatus.value = true
+		
         // const peerConnection = new RTCPeerConnection(configuration);
         // addStreamToRTC(stream.value, peerConnection)
 		// localIceListener(peerConnection, 'outgoingSenderIceCandidate')
@@ -239,23 +237,15 @@ export const useVideoChat = () => {
         //     }
         // })
 		peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
-		// socket.value?.on('incomingPeerId', async (id) => {
-		// 	alert('received peer id')
-        //     const conn = peer.connect(id);
-		// 	conn.on("open", () => {
-		// 		alert('peer connected, sending hi')
-		// 		conn.send("hi!");
-		// 	});
-        // })
-
-		socket.value?.on('incomingOffer', async (offer) => {
-			if (offer) {
+		
+		socket.value?.on('incomingOffer', async (id) => {
+			if (id) {
 				let accept = confirm('Opponent requests a video call')
 				if(accept) {
-					const conn = peer.connect(offer);
+					const conn = peer.connect(id);
 					conn.on("open", () => {
-						alert('peer connected, sending hi')
-						conn.send("hi!");
+						// conn.send("hi!");
+						requestVideoChat('receiver')
 					});
 				} else {
 					socket.value?.emit('rejectCall')
@@ -264,13 +254,14 @@ export const useVideoChat = () => {
 		})
 
 		peer.on("connection", (conn) => {
-			conn.on("data", (data) => {
-				// Will print 'hi!'
-				alert(data);
-			});
-			conn.on("open", () => {
-				conn.send("hello!");
-			});
+			// conn.on("data", (data) => {
+			// 	alert(data);
+			// });
+			// conn.on("open", () => {
+			// 	conn.send("hello!");
+			// });
+			
+			openAlert('peer connected successfully')
 		});
 
 		
@@ -278,30 +269,32 @@ export const useVideoChat = () => {
 
     const receiveCall = async () => {
         videoCallStatus.value = true
-        const peerConnection = new RTCPeerConnection(joinConfig);
-        addStreamToRTC(stream.value, peerConnection) 
-		localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
-        remoteTrackListener(peerConnection)  
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
-		console.log('remote description set: ', peerConnection.remoteDescription)
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
-		console.log('set local: ', peerConnection.localDescription)
-        socket.value?.emit('outgoingAnswer', answer)
-        socket.value?.on('incomingSenderIceCandidate', async (ice) => {
-            if(ice) {
-                console.log('received ice')
-				// console.log(ice)
-                try {
-                    await peerConnection.addIceCandidate(ice);
-					confirmIceConnectionState(peerConnection)
-                } catch (e) {
-                    console.error('Error adding received ice candidate', e);
-                }
-            }
-        })
-        confirmPeerConnection(peerConnection)
-		overSeerPeerConn.value = peerConnection
+
+		
+        // const peerConnection = new RTCPeerConnection(joinConfig);
+        // addStreamToRTC(stream.value, peerConnection) 
+		// localIceListener(peerConnection, 'outgoingReceiverIceCandidate')
+        // remoteTrackListener(peerConnection)  
+        // await peerConnection.setRemoteDescription(new RTCSessionDescription(receivedOffer.value));
+		// console.log('remote description set: ', peerConnection.remoteDescription)
+        // const answer = await peerConnection.createAnswer();
+        // await peerConnection.setLocalDescription(answer);
+		// console.log('set local: ', peerConnection.localDescription)
+        // socket.value?.emit('outgoingAnswer', answer)
+        // socket.value?.on('incomingSenderIceCandidate', async (ice) => {
+        //     if(ice) {
+        //         console.log('received ice')
+		// 		// console.log(ice)
+        //         try {
+        //             await peerConnection.addIceCandidate(ice);
+		// 			confirmIceConnectionState(peerConnection)
+        //         } catch (e) {
+        //             console.error('Error adding received ice candidate', e);
+        //         }
+        //     }
+        // })
+        // confirmPeerConnection(peerConnection)
+		// overSeerPeerConn.value = peerConnection
     }
 
 
