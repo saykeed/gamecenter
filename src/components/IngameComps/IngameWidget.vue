@@ -11,7 +11,7 @@
     import { useVideoChat } from '../../composables/tictactoe/HandleVideoChat';
 
     const { openChat } = useChat()
-    const { requestVideoChat, makeCall } = useVideoChat()
+    const { makeCall } = useVideoChat()
 
 
     
