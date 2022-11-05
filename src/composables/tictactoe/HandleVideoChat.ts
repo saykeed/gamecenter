@@ -3,10 +3,13 @@ import { useSocket } from '../socket/UseSocket'
 import { useAlert } from '../UseAlert'
 import { useModal } from '../UseModal'
 import { Peer } from "peerjs";
+import { useLoader } from '../UseLoader';
 
 const { socket } = useSocket()
 const { openAlert } = useAlert()
 const { openModal } =  useModal()
+const { openLoader, closeLoader } = useLoader()
+
 
 
 
@@ -183,6 +186,7 @@ export const useVideoChat = () => {
 
     async function makeCall() {
 		socket.value?.emit('outgoingOffer', peer.id)
+		// openLoader('Waiting for opponent to receive call')
 		videoCallStatus.value = true
 		
 		
@@ -237,16 +241,30 @@ export const useVideoChat = () => {
         //     }
         // })
 		peer = new Peer(`saykeed-game-center-${new Date().getTime()}`);
+
+		peer.on("call", (call) => {
+			call.answer(stream.value); // Answer the call with an A/V stream.
+			call.on("stream", (remoteVid) => {
+				// Show stream in some <video> element.
+				remoteStream.value = remoteVid
+			});
+		})
 		
 		socket.value?.on('incomingOffer', async (id) => {
 			if (id) {
 				let accept = confirm('Opponent requests a video call')
 				if(accept) {
-					const conn = peer.connect(id);
-					conn.on("open", () => {
-						// conn.send("hi!");
+					// const conn = peer.connect(id);
+					// conn.on("open", () => {
+					// 	// conn.send("hi!");
 						requestVideoChat('receiver')
+					// });
+					const call = peer.call(id, stream.value!);
+					call.on("stream", (remoteVid) => {
+						// Show stream in some <video> element.
+						remoteStream.value = remoteVid
 					});
+					
 				} else {
 					socket.value?.emit('rejectCall')
 				}
@@ -261,7 +279,7 @@ export const useVideoChat = () => {
 			// 	conn.send("hello!");
 			// });
 			
-			openAlert('peer connected successfully')
+			// openAlert('peer connected successfully')
 		});
 
 		
@@ -269,7 +287,7 @@ export const useVideoChat = () => {
 
     const receiveCall = async () => {
         videoCallStatus.value = true
-
+		
 		
         // const peerConnection = new RTCPeerConnection(joinConfig);
         // addStreamToRTC(stream.value, peerConnection) 
