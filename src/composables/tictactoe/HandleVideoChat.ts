@@ -120,8 +120,8 @@ export const useVideoChat = () => {
         //     openAlert('Could not access media devices')
         // }) 
 
-		console.log('making call', peer._id)
-		socket.value?.emit('outgoingOffer', peer._id)
+		// console.log('making call', peer.id)
+		socket.value?.emit('outgoingOffer', peer.id)
     }
 
     const selectDevice = (selectedCam:MediaDeviceInfo) => {
