@@ -171,6 +171,7 @@ export const useVideoChat = () => {
 		peer.on('call', (call) => {
 			navigator.mediaDevices.getUserMedia({video: true, audio: true})
 			  .then((localStream) => {
+				stream.value = localStream
 				call.answer(localStream);
 				videoCallStatus.value = true
 				call.on('stream', (remoteVid) => {
