@@ -25,7 +25,7 @@
                     >
                         <i class="material-icons">{{videoStatus ? 'videocam' : 'videocam_off'}}</i>
                     </button>
-                    <button class="bg-red-500 inVidButton" @click="hangUp">
+                    <button class="bg-red inVidButton" @click="hangUp">
                         <i class="material-icons">phone</i>
                     </button>
                 </div>

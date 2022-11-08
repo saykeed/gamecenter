@@ -128,11 +128,6 @@ export const useVideoChat = () => {
 	const selectDevice = (selectedCam: MediaDeviceInfo) => {
 		openCamera(selectedCam.deviceId).then(dataStream => {
 			stream.value = dataStream
-			// if(userType.value === 'sender') {
-			//     makeCall()
-			// } else {
-			//     receiveCall()
-			// }
 		})
 	}
 
@@ -145,7 +140,7 @@ export const useVideoChat = () => {
 		peer.on("connection", (conn) => {
 			conn.on("data", (data) => {
 				closeLoader()
-				alert(data);
+				console.log(data);
 			});
 		});
 		socket.value?.on('callRejected', () => {
