@@ -65,6 +65,10 @@ io.on("connection", (socket) => {
         socket.to(roomID).emit("callRejected");
     })
 
+	socket.on('endVideoCall', () => {
+		socket.to(roomID).emit("opponentEndsCall")
+	})
+
     socket.on('outgoingSenderIceCandidate', (msg) => {
         socket.to(roomID).emit("incomingSenderIceCandidate", msg);
     })

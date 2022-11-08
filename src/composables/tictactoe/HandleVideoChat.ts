@@ -15,126 +15,22 @@ const { openLoader, closeLoader } = useLoader()
 
 let peer: Peer;
 const videoCallStatus = ref(false)
-const userType = ref('')
-let receivedOffer = ref<any>()
 const stream = ref<MediaStream>()
 const remoteStream = ref<MediaStream>()
-let overSeerPeerConn = ref<RTCPeerConnection>()
-// let remoteStream = new MediaStream()
-// const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
-const configuration = {
-	iceServers: [
-		{
-			urls: [
-				'stun:stun1.l.google.com:19302',
-				'stun:stun2.l.google.com:19302',
-			],
-		},
-		{
-			urls: "turn:openrelay.metered.ca:80",
-			username: "openrelayproject",
-			credential: "openrelayproject"
-		},
-		{
-			urls: "turn:openrelay.metered.ca:443",
-			username: "openrelayproject",
-			credential: "openrelayproject"
-		},
-		{
-			urls: "turn:openrelay.metered.ca:443?transport=tcp",
-			username: "openrelayproject",
-			credential: "openrelayproject"
-		}
-	],
-	iceCandidatePoolSize: 10,
-}
-const joinConfig = {
-	iceServers: [
-		{
-			urls: [
-				'stun:stun1.l.google.com:19302',
-				'stun:stun2.l.google.com:19302',
-			],
-		},
-	],
-	iceCandidatePoolSize: 10,
-	// iceServers: [
-	//     // {
-	//     //   urls: [
-	//     //     'stun:stun1.l.google.com:19302',
-	//     //     'stun:stun2.l.google.com:19302',
-	//     //   ],
-	//     // },
-	//     {
-	//       urls: "turn:openrelay.metered.ca:80",
-	//       username: "openrelayproject",
-	//       credential: "openrelayproject"
-	//     },
-	//     {
-	//       urls: "turn:openrelay.metered.ca:443",
-	//       username: "openrelayproject",
-	//       credential: "openrelayproject"
-	//     },
-	//     {
-	//       urls: "turn:openrelay.metered.ca:443?transport=tcp",
-	//       username: "openrelayproject",
-	//       credential: "openrelayproject"
-	//     }
-	// ],
+const hangUp = () => {
+	stream.value?.getTracks().forEach(track => track.stop())
+	if (remoteStream.value != undefined) {
+		remoteStream.value?.getTracks().forEach(track => track.stop())
+	}
+	stream.value = undefined
+	remoteStream.value = undefined
+	videoCallStatus.value = false
+	socket.value?.emit('endVideoCall')
 }
 
 export const useVideoChat = () => {
 
-	const constraints = {
-		'video': true,
-		'audio': true
-	}
-
-	async function getConnectedDevices(type: string) {
-		if (navigator.mediaDevices) {
-			const devices = await navigator.mediaDevices.enumerateDevices();
-			return devices.filter(device => device.kind === type)
-		} else {
-			openAlert('can not open media devices')
-		}
-
-	}
-
-	async function openCamera(cameraId: string) {
-		const constraints = {
-			'audio': { 'echoCancellation': true },
-			'video': {
-				'deviceId': cameraId
-			}
-		}
-
-		return await navigator.mediaDevices.getUserMedia(constraints);
-	}
-
-	const getLocalSteam = async () => {
-		navigator.mediaDevices.getUserMedia(constraints)
-			.then(() => {
-				getConnectedDevices('videoinput').then(data => {
-					openModal(data)
-				})
-			})
-			.catch(() => {
-				openAlert('Could not access media devices')
-			})
-
-
-	}
-
-	const selectDevice = (selectedCam: MediaDeviceInfo) => {
-		openCamera(selectedCam.deviceId).then(dataStream => {
-			stream.value = dataStream
-		})
-	}
-
-
-
 	async function makeCall() {
-
 		socket.value?.emit('outgoingOffer', peer.id)
 		openLoader('Waiting for opponent to receive call')
 		peer.on("connection", (conn) => {
@@ -189,6 +85,11 @@ export const useVideoChat = () => {
 			}
 		})
 
+		socket.value?.on('opponentEndsCall',() => {
+			openAlert('Opponent has end the call')
+			hangUp()
+		})
+
 	}
 
 	const startCall = async (id: any) => {
@@ -217,7 +118,7 @@ export const useVideoChat = () => {
 
 
 
-	return { selectDevice, stream, remoteStream, handleIncomingWebrtcData, videoCallStatus, makeCall }
+	return { stream, remoteStream, handleIncomingWebrtcData, videoCallStatus, makeCall }
 }
 
 
@@ -256,18 +157,7 @@ export const useVideoChatOptions = () => {
 		minimizeVideoChat.value = !minimizeVideoChat.value
 	}
 
-	const hangUp = () => {
-		stream.value?.getTracks().forEach(track => track.stop())
-		if (remoteStream.value != undefined) {
-			remoteStream.value?.getTracks().forEach(track => track.stop())
-		}
-		if (overSeerPeerConn.value != undefined) {
-			overSeerPeerConn.value?.close()
-		}
-		stream.value = undefined
-		remoteStream.value = undefined
-		videoCallStatus.value = false
-	}
+	
 
 	return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout, hangUp }
 }
