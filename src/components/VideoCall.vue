@@ -25,7 +25,7 @@
                     >
                         <i class="material-icons">{{videoStatus ? 'videocam' : 'videocam_off'}}</i>
                     </button>
-                    <button class="bg-red inVidButton" @click="hangUp">
+                    <button class="bg-red inVidButton" @click="endVideoCall">
                         <i class="material-icons">phone</i>
                     </button>
                 </div>
@@ -40,7 +40,7 @@
 
     const { stream, remoteStream } = useVideoChat()
     const { videoChatOptions, toggleVideoChatOptions, audioStatus,
-        videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout, hangUp } = useVideoChatOptions()
+        videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout, endVideoCall } = useVideoChatOptions()
 
     onMounted(() => {
         let local:any = document.querySelector('.localVid')

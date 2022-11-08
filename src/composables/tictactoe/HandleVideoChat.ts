@@ -25,7 +25,6 @@ const hangUp = () => {
 	stream.value = undefined
 	remoteStream.value = undefined
 	videoCallStatus.value = false
-	socket.value?.emit('endVideoCall')
 }
 
 export const useVideoChat = () => {
@@ -157,9 +156,15 @@ export const useVideoChatOptions = () => {
 		minimizeVideoChat.value = !minimizeVideoChat.value
 	}
 
+	const endVideoCall = () => {
+		hangUp()
+		socket.value?.emit('endVideoCall')
+	}
+
 	
 
-	return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, minimizeVideoChat, controlVideoChatLayout, hangUp }
+	return { videoChatOptions, toggleVideoChatOptions, audioStatus, videoStatus, controlAudio, controlVideo, 
+		minimizeVideoChat, controlVideoChatLayout, endVideoCall }
 }
 
 
