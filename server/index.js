@@ -41,6 +41,7 @@ io.on("connection", (socket) => {
     })
 
     
+	
     socket.on('position', (obj) => {
         socket.to(roomID).emit("positionClicked", obj);
     })

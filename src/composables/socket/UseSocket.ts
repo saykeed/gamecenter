@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 
 const socket = ref<Socket>()
-const url = 'https://saykeed-game-center.herokuapp.com/'
+const url = 'https://saykeed-game-center-server.onrender.com/'
 // const url = "http://localhost:1234/"
 
 export const useSocket = () => {
